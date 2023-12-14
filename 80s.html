@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Audio Player</title>
+    <script src="howler.min.js"></script>
+    <style>
+        /* Overall background - 80's style colors */
+        body {
+            background-color: #0d1137; /* Dark blue */
+            color: #ffdd00; /* Neon yellow */
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Styling the player controls */
+        .player-controls {
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #ff2fb3; /* Hot pink */
+            border: 1px solid #00fff7; /* Bright cyan */
+            color: white;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+            button:hover {
+                background-color: #ff8fcf; /* Lighter pink */
+                border-color: #66fff9;
+            }
+
+        #track-name {
+            margin-top: 10px;
+            font-size: 20px;
+        }
+
+        /* Hiding Progress bar */
+        #progress-container {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="track-name"></div>
+    <div class="player-controls">
+        <button onclick="play()">Play</button>
+        <button onclick="pause()">Pause</button>
+        <button onclick="stop()">Stop</button>
+    </div>
+
+    <script>var tracks = [
+            { name: 'A Master Key Player', src: 'audio/A Master Key.m4a', format: 'm4a' }
+        ];
+
+        var currentTrack = 0;
+        var sound;
+
+        function playTrack() {
+            if (sound) {
+                sound.unload();
+            }
+            sound = new Howl({
+                src: [tracks[currentTrack].src],
+                format: [tracks[currentTrack].format],
+                html5: true,
+                onplay: function () { updateTrackName(); },
+                onend: function () { stop(); }
+            });
+            sound.play();
+        }
+
+        // Play, pause, stop functions here
+        // ... (functions remain the same as your original code)
+        // Omitted for brevity
+
+        updateTrackName();</script>
+</body>
+</html>
