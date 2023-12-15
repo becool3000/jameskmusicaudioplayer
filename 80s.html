@@ -4,10 +4,10 @@
     <title>Audio Player</title>
     <script src="howler.min.js"></script>
     <style>
-        /* Overall background - 80's style colors */
+        /* Overall background */
         body {
-            background-color: black
-            color: #ffdd00; /* Neon yellow */
+            background-color: black;
+            color: white;
             font-family: Arial, sans-serif;
             text-align: center;
             padding: 20px;
@@ -19,9 +19,9 @@
         }
 
         button {
-            background-color: #ff2fb3; /* Hot pink */
-            border: 2px solid #00fff7; /* Bright cyan */
-            color: black;
+            background-color: #333; /* Dark grey background */
+            border: 1px solid #555; /* Slightly lighter border */
+            color: white;
             padding: 10px 20px;
             margin: 5px;
             border-radius: 5px;
@@ -30,31 +30,54 @@
             transition: background-color 0.3s, border-color 0.3s;
         }
 
-            button:hover {
-                background-color: #ff8fcf; /* Lighter pink */
-                border-color: #66fff9;
-            }
+        button:hover {
+            background-color: #555; /* Lighter grey on hover */
+            border-color: #777;
+        }
 
         #track-name {
             margin-top: 10px;
             font-size: 20px;
         }
+
+        /* Progress bar styles */
+        #progress-container {
+            width: 80%;
+            background-color: #777;
+            margin: 20px auto;
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        #progress-bar {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
     <div id="track-name"></div>
+    <div id="progress-container">
+        <div id="progress-bar"></div>
+    </div>
     <div class="player-controls">
         <button onclick="play()">Play</button>
         <button onclick="pause()">Pause</button>
         <button onclick="stop()">Stop</button>
+        <button onclick="next()">Next Track</button>
     </div>
 
-    <script>var tracks = [
+    <script>
+        var tracks = [
             { name: 'A Master Key', src: 'audio/A Master Key.m4a', format: 'm4a' },
+            { name: 'Daniel Guyllium', src: 'audio/Daniel Guyllium.m4a', format: 'm4a' }
         ];
 
         var currentTrack = 0;
         var sound;
+        var progressInterval;
 
         function playTrack() {
             if (sound) {
@@ -64,14 +87,19 @@
                 src: [tracks[currentTrack].src],
                 format: [tracks[currentTrack].format],
                 html5: true,
-                onplay: function () { updateTrackName(); },
-                onend: function () { stop(); }
+                onplay: function() {
+                    updateProgressBar();
+                },
+                onend: function() {
+                    next();
+                }
             });
             sound.play();
+            updateTrackName();
         }
 
         function play() {
-            if (!sound || sound.state() === 'unloaded') {
+            if (!sound) {
                 playTrack();
             } else {
                 sound.play();
@@ -82,18 +110,39 @@
             if (sound) {
                 sound.pause();
             }
+            clearInterval(progressInterval);
         }
 
         function stop() {
             if (sound) {
                 sound.stop();
             }
+            clearInterval(progressInterval);
+            resetProgressBar();
+        }
+
+        function next() {
+            currentTrack = (currentTrack + 1) % tracks.length;
+            playTrack();
         }
 
         function updateTrackName() {
             document.getElementById('track-name').innerText = tracks[currentTrack].name;
         }
 
-        // No call to playTrack, preventing autoplay</script>
+        function updateProgressBar() {
+            clearInterval(progressInterval);
+            progressInterval = setInterval(function() {
+                var seek = sound.seek() || 0;
+                document.getElementById('progress-bar').style.width = (((seek / sound.duration()) * 100) || 0) + '%';
+            }, 1000);
+        }
+
+        function resetProgressBar() {
+            document.getElementById('progress-bar').style.width = '0%';
+        }
+
+        updateTrackName();
+    </script>
 </body>
 </html>
